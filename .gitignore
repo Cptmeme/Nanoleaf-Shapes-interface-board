@@ -1,0 +1,10 @@
+# KiCad local files
+*-backups/
+*.kicad_prl
+*.lck
+fp-info-cache
+_autosave-*
+.DS_Store
+
+# Stale gerber export (current set is in Gerbers/)
+Archive.zip
