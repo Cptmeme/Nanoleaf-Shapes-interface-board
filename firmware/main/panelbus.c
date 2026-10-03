@@ -30,6 +30,7 @@ static pb_state_t s_state;
 static bool s_touched[PB_MAX_PANELS];
 static uint8_t s_status[PB_MAX_PANELS];
 static pb_color_t s_colors[PB_MAX_PANELS];   // by layout position
+static uint8_t s_brightness = 255;   // re-sent after every enumeration: new panels start at their own level
 static pb_touch_cb_t s_touch_cb;
 static volatile bool s_poll_on = true;   // also gates automatic enumeration
 static volatile bool s_trace;
@@ -434,6 +435,8 @@ esp_err_t pb_enumerate(void)
     }
     if (s_state.npanels > 0) {
         s_state.enumerations++;
+        const uint8_t frame[] = { PB_GLOBAL_CMD, PB_CMD_BRIGHTNESS, s_brightness };
+        pb_xact(frame, sizeof frame, NULL, 0, PB_EXPECT_NONE, 0, NULL);
     }
     pb_unlock();
     return err;
@@ -614,6 +617,7 @@ esp_err_t pb_fill(uint8_t r, uint8_t g, uint8_t b, uint8_t w, uint8_t t)
 esp_err_t pb_brightness(uint8_t value)
 {
     const uint8_t frame[] = { PB_GLOBAL_CMD, PB_CMD_BRIGHTNESS, value };
+    s_brightness = value;
     return pb_xact(frame, sizeof frame, NULL, 0, PB_EXPECT_NONE, 0, NULL) < 0 ? ESP_ERR_INVALID_STATE : ESP_OK;
 }
 
